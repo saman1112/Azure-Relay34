@@ -10,7 +10,7 @@ const keepAliveAgent = new http.Agent({
 });
 
 const proxy = httpProxy.createProxyServer({
-  target: TARGET_URL,
+  target: xray.royatweb.com,
   changeOrigin: true,
   secure: false,
   xfwd: true,
