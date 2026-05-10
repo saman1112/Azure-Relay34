@@ -1,49 +1,12 @@
 const http = require('http');
-const httpProxy = require('http-proxy');
-
-const TARGET_URL = 'https://xray.royatweb.com';
-
-const keepAliveAgent = new http.Agent({
-  keepAlive: true,
-  maxSockets: 100,
-  keepAliveMsecs: 3000,
-});
-
-const proxy = httpProxy.createProxyServer({
-  target: TARGET_URL,
-  changeOrigin: true,
-  secure: false,
-  xfwd: true,
-  agent: keepAliveAgent,
-  ws: true,
-  proxyTimeout: 0,
-  timeout: 0,
-});
-
-proxy.on('error', function (err, req, res) {
-  console.error('Proxy error:', err.message);
-  if (res && res.writeHead) {
-    res.writeHead(500, { 'Content-Type': 'text/plain' });
-    res.end('Relay Error.');
-  }
-});
-
-const server = http.createServer((req, res) => {
-  if (req.url === '/' || req.url === '') {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Azure Relay is Alive!');
-    return;
-  }
-
-  proxy.web(req, res);
-});
-
-server.on('upgrade', (req, socket, head) => {
-  proxy.ws(req, socket, head);
-});
 
 const PORT = process.env.PORT || 8080;
 
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Azure App is Alive');
+});
+
 server.listen(PORT, () => {
-  console.log(`Azure Relay running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
