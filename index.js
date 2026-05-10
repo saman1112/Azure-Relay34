@@ -1,7 +1,7 @@
 const http = require('http');
 const httpProxy = require('http-proxy');
 
-const TARGET_URL = 'YOUR_X-RAY_SERVER_ADDRESS';
+const TARGET_URL = 'https://xray.royatweb.com';
 
 const keepAliveAgent = new http.Agent({
   keepAlive: true,
@@ -10,16 +10,18 @@ const keepAliveAgent = new http.Agent({
 });
 
 const proxy = httpProxy.createProxyServer({
-  target: xray.royatweb.com,
+  target: TARGET_URL,
   changeOrigin: true,
   secure: false,
   xfwd: true,
   agent: keepAliveAgent,
+  ws: true,
   proxyTimeout: 0,
   timeout: 0,
 });
 
 proxy.on('error', function (err, req, res) {
+  console.error('Proxy error:', err.message);
   if (res && res.writeHead) {
     res.writeHead(500, { 'Content-Type': 'text/plain' });
     res.end('Relay Error.');
@@ -29,9 +31,10 @@ proxy.on('error', function (err, req, res) {
 const server = http.createServer((req, res) => {
   if (req.url === '/' || req.url === '') {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Azure TURBO Relay is Alive!');
+    res.end('Azure Relay is Alive!');
     return;
   }
+
   proxy.web(req, res);
 });
 
@@ -40,6 +43,7 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 const PORT = process.env.PORT || 8080;
+
 server.listen(PORT, () => {
-  console.log(`Turbo Relay running on port ${PORT}`);
+  console.log(`Azure Relay running on port ${PORT}`);
 });
