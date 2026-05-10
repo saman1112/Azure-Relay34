@@ -5,7 +5,7 @@ const TARGET_URL = 'https://xray.royatweb.com';
 
 const proxy = httpProxy.createProxyServer({
   target: TARGET_URL,
-  changeOrigin: true,
+  changeOrigin: false,
   secure: false,
   xfwd: true,
   proxyTimeout: 0,
